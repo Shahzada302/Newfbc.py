@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-
-import os
-import sys
-import uuid
+import requests
+import random
+import string
 import hashlib
-from datetime import datetime, timedelta
+from faker import Faker
+import time
 
 # ANSI Colors
 RESET = "\033[0m"
@@ -20,58 +19,7 @@ WHITE = "\033[38;5;15m"
 PINK = "\033[38;5;213m"
 GREY = "\033[38;5;245m"
 
-# Device Key
-def get_device_key():
-    return hashlib.md5(str(uuid.getnode()).encode()).hexdigest()
-
-# Show Approval Message
-def show_license_screen():
-    key = get_device_key()
-    print(f"""{BOLD}{CYAN}
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃{PINK}   ╔═╗┌─┐┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬ ┬┬┌─┐   {CYAN}FACEBOOK AUTO CREATOR  V2.0   {CYAN}┃
-┃{RED}   ╚═╗│ ││ │├─┘│ │ │ ├─┤├┤ ├┴─┤   {YELLOW}Author: {WHITE}Shahzada Ajmal      {CYAN}┃
-┃{ORANGE}   ╚═╝└─┘└─┘┴  └─┘ ┴ ┴ ┴└─┘┴ ┴┴┴ ┴   {GREEN}WhatsApp: {WHITE}+923218745502 {CYAN}┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-{RED}[!] This tool is locked. Approval required to continue.{RESET}
-
-{YELLOW}➤ Please send the following KEY to the owner for activation:{RESET}
-
-{BOLD}Your Key 🗝️ : {GREEN}{key}{RESET}
-
-{CYAN}Contact WhatsApp: {WHITE}+923218745502{RESET}
-""")
-    sys.exit()
-
-# Validate License
-def is_license_valid():
-    try:
-        with open("license.txt", "r") as f:
-            content = f.read().strip()
-        device_key, expiry_str = content.split("|")
-        if device_key != get_device_key():
-            return False
-        expiry_date = datetime.strptime(expiry_str, "%Y-%m-%d")
-        return datetime.now() <= expiry_date
-    except:
-        return False
-
-# Check License or Show Request
-if not is_license_valid():
-    show_license_screen()
-
-# 🟢 MAIN FACEBOOK CREATOR CODE STARTS BELOW
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-import requests
-import random
-import string
-from faker import Faker
-import time
-
-# Super Stylish Header
+# Super Stylish Header (Original one restored)
 print(f"""{BOLD}{CYAN}
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃{PINK}   ╔═╗┌─┐┬ ┬┌─┐┬ ┬┌┬┐┌─┐┬ ┬┬┌─┐   {CYAN}FACEBOOK AUTO CREATOR  V2.0   {CYAN}┃
@@ -79,13 +27,17 @@ print(f"""{BOLD}{CYAN}
 ┃{ORANGE}   ╚═╝└─┘└─┘┴  └─┘ ┴ ┴ ┴└─┘┴ ┴┴┴ ┴   {GREEN}WhatsApp: {WHITE}+923218745502 {CYAN}┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 {RESET}""")
+print(f"{BOLD}{MAGENTA}{'⇼'*60}{RESET}")
 
+# Random String Generator
 def generate_random_string(length):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
+# Fake US Phone Generator
 def generate_fake_phone():
     return "+1" + random.choice("23456789") + ''.join(random.choices(string.digits, k=9))
 
+# Fake Profile Generator
 def create_fake_profile(user_password):
     fake = Faker()
     phone = generate_fake_phone()
@@ -95,49 +47,50 @@ def create_fake_profile(user_password):
     last_name = fake.last_name()
     return phone, password, first_name, last_name, birthday
 
+# Facebook API Register Function
 def register_facebook_account(phone, password, first_name, last_name, birthday, email):
     api_key = '882a8490361da98702bf97a021ddc14d'
     secret = '62f8ce9f74b12f84c123cc23437a4a32'
     gender = random.choice(['M', 'F'])
 
-    req = {
-        'api_key': api_key,
-        'attempt_login': True,
-        'birthday': birthday.strftime('%Y-%m-%d'),
-        'client_country_code': 'EN',
-        'fb_api_caller_class': 'com.facebook.registration.protocol.RegisterAccountMethod',
-        'fb_api_req_friendly_name': 'registerAccount',
-        'firstname': first_name,
-        'format': 'json',
-        'gender': gender,
-        'lastname': last_name,
-        'email': email,
-        'locale': 'en_US',
-        'method': 'user.register',
-        'password': password,
-        'reg_instance': generate_random_string(32),
-        'return_multiple_errors': True
-    }
+    req = {  
+        'api_key': api_key,  
+        'attempt_login': True,  
+        'birthday': birthday.strftime('%Y-%m-%d'),  
+        'client_country_code': 'EN',  
+        'fb_api_caller_class': 'com.facebook.registration.protocol.RegisterAccountMethod',  
+        'fb_api_req_friendly_name': 'registerAccount',  
+        'firstname': first_name,  
+        'format': 'json',  
+        'gender': gender,  
+        'lastname': last_name,  
+        'email': email,  
+        'locale': 'en_US',  
+        'method': 'user.register',  
+        'password': password,  
+        'reg_instance': generate_random_string(32),  
+        'return_multiple_errors': True  
+    }  
 
-    sig = ''.join(f'{k}={v}' for k, v in sorted(req.items()))
-    req['sig'] = hashlib.md5((sig + secret).encode()).hexdigest()
+    sig = ''.join(f'{k}={v}' for k, v in sorted(req.items()))  
+    req['sig'] = hashlib.md5((sig + secret).encode()).hexdigest()  
 
-    try:
-        with open("user_agents.txt") as f:
-            agents = f.read().splitlines()
-        user_agent = random.choice(agents)
-    except:
-        user_agent = '[FBAN/FB4A;FBAV/300.0.0.20.123;FBDM={density=2.0,width=720,height=1280};FBLC=en_US;FBDV=Pixel;FBSV=9;]'
+    try:  
+        with open("user_agents.txt") as f:  
+            agents = f.read().splitlines()  
+        user_agent = random.choice(agents)  
+    except:  
+        user_agent = '[FBAN/FB4A;FBAV/300.0.0.20.123;FBDM={density=2.0,width=720,height=1280};FBLC=en_US;FBDV=Pixel;FBSV=9;]'  
 
-    headers = {
-        'User-Agent': user_agent
-    }
+    headers = {  
+        'User-Agent': user_agent  
+    }  
 
-    try:
-        res = requests.post('https://b-api.facebook.com/method/user.register', data=req, headers=headers, timeout=25)
-        data = res.json()
+    try:  
+        res = requests.post('https://b-api.facebook.com/method/user.register', data=req, headers=headers, timeout=25)  
+        data = res.json()  
 
-        if 'new_user_id' in data:
+        if 'new_user_id' in data:  
             print(f"""
 {BOLD}{GREEN}━━━━━━━━━━━━━━━  ACCOUNT CREATED SUCCESSFULLY  ━━━━━━━━━━━━━━━{RESET}
 {BOLD}{CYAN}EMAIL     : {YELLOW}{email}{RESET}
@@ -153,15 +106,16 @@ def register_facebook_account(phone, password, first_name, last_name, birthday, 
                 f.write(f"{email} | {password} | {first_name} {last_name} | {data['new_user_id']}\n")
             return True
         elif 'error_msg' in data and 'verify' in data['error_msg'].lower():
-            print(f"{BOLD}{ORANGE}[!] Manual Verify Required: {YELLOW}{email}{RESET}")
+            print(f"{BOLD}{ORANGE}[!] Manual Verify Required: {YELLOW}{email}{RESET} — Login & Add Your Number")
         else:
             print(f"{BOLD}{RED}[×] FB Error: {data.get('error_msg', 'Unknown')}{RESET}")
         return False
 
-    except Exception as e:
-        print(f"{BOLD}{RED}[×] Facebook API Error: {e}{RESET}")
+    except Exception as e:  
+        print(f"{BOLD}{RED}[×] Facebook API Error: {e}{RESET}")  
         return False
 
+# Main Execution
 try:
     count = int(input(f"{BOLD}{CYAN}[+] How Many Accounts You Want: {RESET}"))
 except:
@@ -170,11 +124,13 @@ except:
 user_password = input(f"{BOLD}{CYAN}[+] Enter Password For All Accounts: {RESET}")
 
 for i in range(count):
+    success = False
     for attempt in range(3):
         print(f"\n{BOLD}{GREY}[•] Creating account {i+1} (Attempt {attempt+1}){RESET}")
         user_email = input(f"{BOLD}{CYAN}[📩] Enter Email For Account {i+1}: {RESET}")
         phone, pw, fn, ln, bday = create_fake_profile(user_password)
-        if register_facebook_account(phone, pw, fn, ln, bday, user_email):
+        success = register_facebook_account(phone, pw, fn, ln, bday, user_email)
+        if success:
             break
         time.sleep(5)
     time.sleep(15)
