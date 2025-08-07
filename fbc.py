@@ -132,5 +132,5 @@ for i in range(count):
         success = register_facebook_account(phone, pw, fn, ln, bday, user_email)
         if success:
             break
-        time.sleep(5)
+        time.sleep(10)
     time.sleep(15)
